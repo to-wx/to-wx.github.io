@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>ES使用过程中遇到的坑 | Wang Xiao</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java,Sprint boot,Elasticsearch,">
+  
+
+  <meta name="description" content="这是大三暑假完成的一个基于Elasticsearch的搜索引擎的心得篇，十五天的时间遇到了太多的坑，在此做记录。">
+<meta name="keywords" content="Java,Sprint boot,Elasticsearch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ES使用过程中遇到的坑">
+<meta property="og:url" content="https://to-wx.github.io/2019/07/21/2/index.html">
+<meta property="og:site_name" content="Wang Xiao">
+<meta property="og:description" content="这是大三暑假完成的一个基于Elasticsearch的搜索引擎的心得篇，十五天的时间遇到了太多的坑，在此做记录。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://github.com/yangyueren/ChaggieSearchEngine/raw/master/pictures/1.png">
+<meta property="og:updated_time" content="2019-07-20T16:29:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ES使用过程中遇到的坑">
+<meta name="twitter:description" content="这是大三暑假完成的一个基于Elasticsearch的搜索引擎的心得篇，十五天的时间遇到了太多的坑，在此做记录。">
+<meta name="twitter:image" content="https://github.com/yangyueren/ChaggieSearchEngine/raw/master/pictures/1.png">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/Resume/" rel="noopener noreferrer" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#深度搜索引擎体会"><span class="toc-text">深度搜索引擎体会</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-2" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">ES使用过程中遇到的坑</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.07.21</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>wang xiao</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/Search-Engine/">Search Engine</a>
+  </span>
+
+
+
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>这是大三暑假完成的一个基于Elasticsearch的搜索引擎的心得篇，十五天的时间遇到了太多的坑，在此做记录。<br><a id="more"></a></p>
+<h2 id="深度搜索引擎体会"><a href="#深度搜索引擎体会" class="headerlink" title="深度搜索引擎体会"></a>深度搜索引擎体会</h2><hr>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">从7月5号到7月19号，历时十五天的课程结束了，深深的松了一口气，可以缓解一下身心的压力。</span><br><span class="line">这次的项目，是这三年中做的最认真的一次，从5号到18号，每天晚上两点多睡，八点多起床吃早饭来机房，这门课让我半年来不早起不吃早饭的人，养成了吃早饭的习惯，每天来机房时手机的电量有90%，晚上回去的时候还能够剩下65%，每天的上班的六个小时，不熬夜是不可能的，每天晚上都在熬夜补充新的功能，一点点从0到1搭建起自己的系统，用了6台服务器，部署了ES的集群，成果颇丰。</span><br></pre></td></tr></table></figure>
+<p>以上是一些偏离主题的碎碎念，以下是正文。</p>
+<p>我们此次项目做的是深度搜索引擎，爬取了小鸡词典、微博、b站等方面的数据，将数据清洗后存到Elasticsearch中，为了充分发挥ES的优势，我使用了三台服务器用来跑ES，一台服务器跑后端程序，另外还有两台图片搜索引擎的服务器，由队友负责搭建。</p>
+<p>这个项目的简介可以在此<a href="https://github.com/yangyueren/ChaggieSearchEngine" target="_blank" rel="noopener">github</a>仓库中找到，在此不做赘述，本文着重讲述遇到的问题。</p>
+<p>首先是Elasticsearch版本的问题，7.2的版本对java Springboot的支持太不友好了，maven里面找不到对7.2版本的ES的repository的插件，所以浪费了一天的时间在这个上面，期间我更换过到2.x的版本和5.x的版本，发现都不如人意，感谢其他组同学的支持，提供了解决思路，使用6.4的版本，最终解决问题。</p>
+<p>在ES部署过程中，我一开始就是部署成了集群的状态，对于后续的开发不利，因为我有一台阿里云服务器一直崩溃，所以集群也一直崩溃，而那台服务器又是主节点，在被折磨两天后毅然选择关掉那台服务器，找同学借了其他的服务器。这也拖累了后面的开发进度。如果我一开始就是先在单节点上部署，可以先进行后续的开发，等到最后再来调整服务器集群的问题，这样我在项目的个性化搜索推荐方面还可以做的更加出色。</p>
+<p>另一个坑是Springboot对ES的操作，Springboot在定义ES的索引的时候，没办法指定分词器，这就很尴尬。ES的默认分词器是英文的，对于中文的支持特特不友好。我输入的句子，他会拆分成一个个的字建立索引，这样的倒排索引，查一个句子的查询结果与预期的相关度相去甚远，归根结底是Spring自己建立索引时候我不会指定分词器，我最终选择学习ES的语法，首先配置好ES的index，只让Spring插入数据，不让他建索引，这样就解决了这个问题。</p>
+<p>另外就是在java中对ES进行数据的查询，repository有些鸡肋，很多想进行的查询都没办法用。我后来查到了一种方法，是加@Query注解，一定程度上缓解了这个问题。其次是sort的问题，我们想做多维的排序，但是ES对这个支持的不是很好，比如有300条数据hit，但是我加入了sort的排序方式，相关度很低的结果可能被拍到前面。于是我在ES中查询时候没有使用sort，但是限制了page size，50左右，然后对返回的一个page的内容进行手动排序，于是手写了多维排序的方法。</p>
+<p>为了java中的多维排序，我使用了最愚蠢的方法。我需要对time view like三个维度做多维排序，他们的排列组合有12种（3+6+6），于是我手写了12条下面的语句。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*按照view like time排序*/</span></span><br><span class="line">Collections.sort(modifyData, (a, b) -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (!a.getView().equals(b.getView())) &#123;</span><br><span class="line">                        <span class="keyword">return</span> b.getView() - a.getView();</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">if</span> (!a.getLike().equals(b.getLike())) &#123;</span><br><span class="line">                            <span class="keyword">return</span> b.getLike() - a.getLike();</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (!a.getTime().equals(b.getTime())) &#123;</span><br><span class="line">                                <span class="keyword">return</span> compareTime(b.getTime(),a.getTime());</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*按照like time view排序*/</span></span><br><span class="line">Collections.sort(modifyData, (a, b) -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (!a.getLike().equals(b.getLike())) &#123;</span><br><span class="line">                        <span class="keyword">return</span> b.getLike() - a.getLike();</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">if</span> (!a.getTime().equals(b.getTime())) &#123;</span><br><span class="line">                            <span class="keyword">return</span> compareTime(b.getTime(),a.getTime());</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (!a.getView().equals(b.getView())) &#123;</span><br><span class="line">                                <span class="keyword">return</span> b.getView() - a.getView();</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+<p>这是一个比较愚蠢的方法吧，但是确实解决了我的问题，能够解决问题的办法就是好方法！当然了，我也在一直思考如何有更加优美的写法。</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2019/07/20/1/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="show pull-right" href="/2019/10/19/3/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/Resume/" rel="noopener noreferrer" target="_self">
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

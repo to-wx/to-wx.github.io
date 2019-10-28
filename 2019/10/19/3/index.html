@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>Clue-based Spatio-textual Query 论文笔记 | Wang Xiao</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="paper,Db,">
+  
+
+  <meta name="description" content="1. 背景介绍POI数据库存储了空间中各个地点的位置信息，包括地点的名称，类别，地址，地理坐标等，可以提供查询服务。 这篇文章研究了如下的问题：用户想查询一个地点，但是记不清这个地点准确的信息，只能提供一些关于这个POI的线索，所以算法需要通过这些线索信息推测出这个地点。比如：用户想查询多年前去过的一个位于杭州西湖区的咖啡馆，但是他忘记了咖啡馆的名字和准确地址，只记得离这个咖啡馆200米远有一">
+<meta name="keywords" content="paper,Db">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Clue-based Spatio-textual Query 论文笔记">
+<meta property="og:url" content="https://to-wx.github.io/2019/10/19/3/index.html">
+<meta property="og:site_name" content="Wang Xiao">
+<meta property="og:description" content="1. 背景介绍POI数据库存储了空间中各个地点的位置信息，包括地点的名称，类别，地址，地理坐标等，可以提供查询服务。 这篇文章研究了如下的问题：用户想查询一个地点，但是记不清这个地点准确的信息，只能提供一些关于这个POI的线索，所以算法需要通过这些线索信息推测出这个地点。比如：用户想查询多年前去过的一个位于杭州西湖区的咖啡馆，但是他忘记了咖啡馆的名字和准确地址，只记得离这个咖啡馆200米远有一">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://github.com/yangyueren/ChaggieSearchEngine/raw/master/pictures/1.png">
+<meta property="og:updated_time" content="2019-10-19T11:11:04.824Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Clue-based Spatio-textual Query 论文笔记">
+<meta name="twitter:description" content="1. 背景介绍POI数据库存储了空间中各个地点的位置信息，包括地点的名称，类别，地址，地理坐标等，可以提供查询服务。 这篇文章研究了如下的问题：用户想查询一个地点，但是记不清这个地点准确的信息，只能提供一些关于这个POI的线索，所以算法需要通过这些线索信息推测出这个地点。比如：用户想查询多年前去过的一个位于杭州西湖区的咖啡馆，但是他忘记了咖啡馆的名字和准确地址，只记得离这个咖啡馆200米远有一">
+<meta name="twitter:image" content="https://github.com/yangyueren/ChaggieSearchEngine/raw/master/pictures/1.png">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/Resume/" rel="noopener noreferrer" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-背景介绍"><span class="toc-text">1. 背景介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-算法简介"><span class="toc-text">2. 算法简介</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-Spatio-textual-Context-similarity"><span class="toc-text">2.1 Spatio-textual Context similarity</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-Query-Processing-Algorithm"><span class="toc-text">2.2 Query Processing Algorithm</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-时空文本上下文索引：Roll-out-star-R-tree"><span class="toc-text">3. 时空文本上下文索引：Roll-out-star R-tree</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-Roll-out-star"><span class="toc-text">3.1 Roll-out-star</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-Similarity-Estimation"><span class="toc-text">3.2 Similarity Estimation</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-Roll-out-star-R-Tree-and-Query-Processing"><span class="toc-text">3.3 Roll-out-star R-Tree and Query Processing</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-一些实验"><span class="toc-text">5. 一些实验</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-数据集描述"><span class="toc-text">5.1 数据集描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-Accuracy"><span class="toc-text">5.2 Accuracy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-Efﬁciency-and-RSR-tree"><span class="toc-text">5.3 Efﬁciency and RSR-tree</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-论文贡献"><span class="toc-text">6. 论文贡献</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-一些证明"><span class="toc-text">7. 一些证明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-遗留问题"><span class="toc-text">8. 遗留问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#8-1-max的问题"><span class="toc-text">8.1 max的问题</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-3" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Clue-based Spatio-textual Query 论文笔记</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.10.19</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>wang xiao</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/paper/">paper</a>
+  </span>
+
+
+
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <a id="more"></a>
+<!-- ## Clue-based Spatio-textual Query 论文笔记
+
+基于线索的时空文本查询 -->
+<h3 id="1-背景介绍"><a href="#1-背景介绍" class="headerlink" title="1. 背景介绍"></a>1. 背景介绍</h3><p>POI数据库存储了空间中各个地点的位置信息，包括地点的名称，类别，地址，地理坐标等，可以提供查询服务。</p>
+<p>这篇文章研究了如下的问题：用户想查询一个地点，但是记不清这个地点准确的信息，只能提供一些关于这个POI的线索，所以算法需要通过这些线索信息推测出这个地点。比如：用户想查询多年前去过的一个位于杭州西湖区的咖啡馆，但是他忘记了咖啡馆的名字和准确地址，只记得离这个咖啡馆200米远有一个餐馆，餐馆的左侧500米远处有一家蛋糕店。请你帮忙查出来这个咖啡馆的位置。</p>
+<p>这篇文章主要做了两方面的工作，第一是提出衡量两组POIs的相似度提高准确率，第二是提出了RSR-tree提高查询效率，最后还提出了Ensemble Method提高准确率。</p>
+<p>我们将拿到两组POI，第一组是querying POIs：$Q_R(q,N,E)$，$q$是要查的POI，$N$是clue POIs的集合(包含q自身)，$N$ = {$q,q_1,q_2…..$q_n}, $E$是clue POIs之间的连接关系。第二组是$D$：$D$是我们的POI数据库。</p>
+<p>我们需要输出与$D_R$中与$q$时空文本上下文最相似的POI $o$，也就是在$D_R$中找到与$Q_R(q,N,E)$最相匹配的一组实例 $I$, $I$ = {$o, o_1, o2 …… o_n$} ，其中$q$与$o$匹配，$q_i$与$o_i$匹配($1&lt;= i &lt;= n$)，$o$即为我们所求</p>
+<p>如下图，在$Q$和region $R$中，分别标出来了每个POI的category，POI之间的距离以及方向（文章中用relative direction代替absolute direction）。</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-141911@2x.png?raw=true" style="zoom:68%"></p>
+<p>以及我们需要用到的一些notations：</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-145935@2x.png?raw=true" style="zoom:60%"></p>
+<h3 id="2-算法简介"><a href="#2-算法简介" class="headerlink" title="2. 算法简介"></a>2. 算法简介</h3><p>在本篇文章的POI查询中，我们只需关心POI的三类信息，POI的category，distance，direction。</p>
+<p>我们该如何在$R$中找到符合$Q$的一组实例呢？</p>
+<p>我会先想到暴力的方法，暴力枚举所有category相符合的实例$I$，然后衡量他们direction、distance与querying POIs的相似度，相似度最大的即为所求解：$q$对应cafe，$q_1$对应restaurant，$q_2$对应bus stop，$q_3$对应bakery。相应的，在$D_R$中我们可以按category对各个POI分类，比如cafe包括{$o, o_7, o_8, o_{16}$}，restaurant包括{$o_1,o_6,o_9, o_{15},o_{17}$}，我们可以让$q_i$分别对应$D_R(q_i.cid)$ 中的每个$o_i$，对每一种情况计算$SCsim(q, o, N, I)$ (选定与$q$对应的$o$以及与$q_i$对应的$o_i$ ($1&lt;=i&lt;=n$)的实例$I$，计算$N$与$I$的相似度)，选取最大的相似度的那组$I$和$o$，即为我们的解。</p>
+<p>但是相似度该如何计算，如何衡量才更有效？</p>
+<p>数据库本身的质量存在问题，甚至可能要查的$o$并不在数据库中；用户提供的clue POIs也存在质量问题。</p>
+<p>所以作者给出了一套相似度计算方法，能够显著提高查询的准确率。</p>
+<h4 id="2-1-Spatio-textual-Context-similarity"><a href="#2-1-Spatio-textual-Context-similarity" class="headerlink" title="2.1 Spatio-textual Context similarity"></a>2.1 Spatio-textual Context similarity</h4><p>首先作者提供了一个先验知识：Minimum Matching Requriment</p>
+<blockquote>
+<p>Given a clue-based spatio-textual query $Q_R (q, N, E)$, if a POI $o ∈ D_R (q.cid)$ truly matches the querying POI $q$, the minimum matching requirement is that at least one clue POI $q^m ∈ N \backslash \lbrace q\rbrace $has truly matching POI $o^m$ with the same category as $q^m$ in $D_R \backslash\lbrace o \rbrace$.</p>
+</blockquote>
+<p>下图提供了一个例子，令$o$对应$q$，$o_1$对应$q_1$（作为$q^m$），让$o$与$q$重合，$o_1$与$q_1$重合，其他所有的点$q_i$跟着旋转，他们的distance也进行放缩，放缩因子$γ = S(|d_ E (q^m , q) − d_ E (o^m , o)|).$</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-152406@2x.png?raw=true" style="zoom:60%"></p>
+<p>$d_ E (q^m , q)$是综合考虑distance和relative direction的一个距离函数，$S(d) = 2 − 2 ∗ \cfrac{1}{1 + e^{−dβ}} $为激活函数，他们的图像如下：</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-153421@2x.png?raw=true" style="zoom: 60%"></p>
+<p>当$q$与$o$完全重合，选出的$q^m$与$o^m$完全重合，剩余的点$q_i$再通过暴力的方法，找出符合category条件的所有Instance，计算每个Instance的$SCsim(N, I)$，最大值即为$SCsim(q, o, q^m , o^m )$的值。</p>
+<p>以下为两组POIs相似度的计算公式：</p>
+<blockquote>
+<p>$SCsim(q, o, q^ m , o^ m ) := γ \max\limits _{I \subseteq  \phi} SCsim(N, I).$</p>
+<p>where $Φ$ is the set of all possible matching instances of $N$ in $D_R$ .​</p>
+<p>$SCsim(N, I) := \Sigma _{q_i∈N,o_i∈I} τ_i ∗ S(d_E (q i , o i )).$</p>
+<p>$γ = S(|d _E (q ^m , q) − d _E (o ^m , o)|).$</p>
+<p>$S(d) = 2 − 2 ∗ \cfrac{1}{1 + e^{−dβ}} $</p>
+</blockquote>
+<p>$d_E (o_i , q_i )$ is the Euclidean distance between POI $o_i$ and POI $q _i $,</p>
+<p>$τ<em>i$ is the number of edges linked with POI $q</em> i$ in the clue,</p>
+<p>$S(d)$ is a sigmoid function to normalize distance d, and $γ$ is the scale factor of $Q$ transformation,</p>
+<p>In particular, $d_E (q_i , o_i )$ characterises the difference between $q_i$ and $o_i$ in terms of their distances to $q$ as well as their relative directions against edge $(q, q^m )$.</p>
+<h4 id="2-2-Query-Processing-Algorithm"><a href="#2-2-Query-Processing-Algorithm" class="headerlink" title="2.2 Query Processing Algorithm"></a>2.2 Query Processing Algorithm</h4><p>Algorithm 1:</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-160246@2x.png?raw=true" alt="7" style="zoom: 60%;"></p>
+<p>Algorithm 2: Algorithm 1中的matching instance非常多，所以作者改进了$SCsim(q,o,q^m,o^m)$计算算法，提出了更加有效率的Algorithm 2。</p>
+<p>算法描述：</p>
+<ul>
+<li>line 3: 把$D_R(q_i.cid)$中离$q_i$最近的$o_i$放到$\Lambda$集合中；</li>
+<li>line 5: 如果$\Lambda$集合中元素均互斥，$\Lambda$集合即为相似度最大的Instance；</li>
+<li>line 6: 返回相似度最大的Instance的value;</li>
+<li>line 7:如果$\Lambda$集合中元素不互斥，则需要对$\Lambda$集合中的每类category，运用AugPath算法，计算出该类category下$\Sigma _{q_i ∈T 3,o_i ∈T 4} τ i ∗ S(d_E (q_i , o_i ))$的最大值，其中 $T3 = N(cid) \backslash \lbrace q, q^m \rbrace $ and $ T4 = D_R (cid) \backslash \lbrace o, o^m \rbrace $ .   </li>
+</ul>
+<p>AugPath算法作用：make sure one to one match for this category .</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-160410@2x.png?raw=true" alt="0" style="zoom: 60%;"></p>
+<h3 id="3-时空文本上下文索引：Roll-out-star-R-tree"><a href="#3-时空文本上下文索引：Roll-out-star-R-tree" class="headerlink" title="3. 时空文本上下文索引：Roll-out-star R-tree"></a>3. 时空文本上下文索引：Roll-out-star R-tree</h3><p>引进RSR-tree是为了提高查询效率。</p>
+<p>以下将先介绍Roll-out-star，其次介绍在Roll-out-star下两组POIs的相似度的衡量，最后介绍使用RSR-tree进行查询的过程。</p>
+<h4 id="3-1-Roll-out-star"><a href="#3-1-Roll-out-star" class="headerlink" title="3.1 Roll-out-star"></a>3.1 Roll-out-star</h4><p>RSR是针对一个POI $o$ , 其他的POIs都以他作为参照，用角度 $\theta$ 和 距离 $dis$ 表示，类似于极坐标。横轴代表 $direction$， 纵轴代表 $distance$ ，如下图：</p>
+<p>注：</p>
+<p>每个POI，都有一个RSR-tree，用$o.RS$ 表示。</p>
+<p>$0度$到$360度$ 和 $360度$到$720度$ 是相同的图像，是为了计算方便，才会扩展到$720度$。</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-201140@2x.png?raw=true" alt="7" style="zoom:60%;"></p>
+<p>在RSR-tree中，使用grid cell划分区域，每个grid cell只记录落在其中的category的类别；</p>
+<p>两个RSR-tree的叠加：相应位置的grid cell中的category取并集。</p>
+<p>图例如下：</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-203603@2x.png?raw=true" style="zoom:70%"></p>
+<h4 id="3-2-Similarity-Estimation"><a href="#3-2-Similarity-Estimation" class="headerlink" title="3.2 Similarity Estimation"></a>3.2 Similarity Estimation</h4><p>对于$q$和每个$o$，我们可以构建出他们的Roll-out-star，如下图：</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-220129@2x.png?raw=true" alt="8" style="zoom:70%;"></p>
+<p>Using o.RS, the spatio-textual context similarity between q and o is estimated as follows.</p>
+<blockquote>
+<p>$SCsim ^∗ (q, o) = \max \limits _{q^ m∈N \backslash {q}, gc(q^m)∈o.RS} SCsim^∗ (q, o, gr(q^m ), gc(q^m )).$</p>
+<p>where</p>
+<p>$SCsim ∗ (q, o, gr(q^m ),gc(q^m )) = γ^ ∗ \Sigma _{a_i ∈N_G ,b_i ∈Λ_G} τ_i ∗ S(d_E (a_i , b_i )) $</p>
+<p>$γ^∗= S(min(T5, T6)).$</p>
+<p>$T5 = |gr(q^m ).dist_{max} − gc(o^m ).dist_{min} |.$</p>
+<p>$T6 = |gr(q^m ).dist_{min} − gc(o^m ).dist_{max} |.$</p>
+</blockquote>
+<p>上述式子即为计算$q$与$o$的相似度。解释如下：</p>
+<p>根据Minimum Matching Requriment准则，我们需要选定一个$q^m$ , 移动$q.RS$，将$gr(q^m)$与一个grid cell $gc(q^m)$完全重合。这里可以理解为，$q.RS$是基于$q$的，我们再让$q.RS$在$o.RS$上移动使$gr(q^m)$与$gc(q^m)$完全重合，意味着选定了$q$与$o$对应，$gr(q^m)$与$gc(q^m)$对应，符合上述准则。</p>
+<p>然后在此基础上，我们对每个$gr(q_i)$在$o.RS$中找到在原始空间中离它最近的$gc(q_i)$，重命名为$gc_{imax}$，并添加到$\Lambda_G$集合中。</p>
+<p>计算$SCsim ∗ (q, o, gr(q^m ),gc(q^m )) = γ^ ∗ \Sigma _{a_i ∈N_G ,b_i ∈Λ_G} τ_i ∗ S(d_E (a_i , b_i )) $的时候，$d_E(a_i, b_i)$是在original space 中的距离。</p>
+<p>Distance in original space is as follows.</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-230359@2x.png?raw=true" alt="10" style="zoom:70%;"></p>
+<h4 id="3-3-Roll-out-star-R-Tree-and-Query-Processing"><a href="#3-3-Roll-out-star-R-Tree-and-Query-Processing" class="headerlink" title="3.3 Roll-out-star R-Tree and Query Processing"></a>3.3 Roll-out-star R-Tree and Query Processing</h4><p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-235400@2x.png?raw=true" style="zoom:50%;"></p>
+<p>RSR-tree是R-tree的扩展，如上图所示。与R-tree相比，RSR-tree的节点存储中增加了$ptr$指针。在非叶节点之中 $ptr$ 指针指向 superimposed RSR-tree of all POIs under this entry（RSR的叠加详见section 3.1），并且是按category存的RSR-tree。在叶节点中，$ptr$ 指向当前POI $o$ 的Roll-out-star。</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191017-235420@2x.png?raw=true" style="zoom:50%;"></p>
+<p>基于RSR-tree的查询过程解释如下：</p>
+<p>$H$是一个堆，初始化为空。</p>
+<ol>
+<li><p>从根开始访问，如果$etr$ 覆盖 $R$ 区域并且 $etr.cids$ 包含 $q.cid$，计算 $etr.credit$  = $SCsim^*(q, o_{etr})$ ，并把$etr$插入到堆$H$中。</p>
+</li>
+<li><p>取出$H$中$credit$最大到$etr$，如果 $etr$是非叶节点，依次访问其$ChildNode$，重复上述过程1。如果$etr$是叶节点，赋值为$o$，并且删掉$H$中$credit$比他低的 $etr’$ .</p>
+</li>
+<li>重复2过程，直到$H$为空。</li>
+</ol>
+<p>###4. Ensemble Method</p>
+<p>概念：对于一个$Q_R(q,N,E)$ ，我们可以令$N \backslash \lbrace q \rbrace$中的每个$q_i$分别作为querying POI (即 $q_i$代替$q$作为querying POI，$q$成为了clue POI)，所以现在一共有N个$Q_R(q,N,E)$，对于每个$Q_R(q,N,E)$，可以选取出 $\zeta$ 个matching instance，记为$l_i$，在$l_i$中对$I_i$进行降序排名。$I$最终得分为 $Score(I) = \Sigma _{l_i \in L}pos(I, l_i)$</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191018-004012@2x.png?raw=true" style="zoom:60%;"></p>
+<p>使用Ensemble Method有两个目的：</p>
+<ol>
+<li>交叉验证提高准确率；</li>
+<li>如果由于数据质量问题，truly matching POI of $q$ 不在数据库中，根据querying POIs中的时空文本关系，使用Ensemble Method仍可以找到相应的区域。</li>
+</ol>
+<h3 id="5-一些实验"><a href="#5-一些实验" class="headerlink" title="5. 一些实验"></a>5. 一些实验</h3><h4 id="5-1-数据集描述"><a href="#5-1-数据集描述" class="headerlink" title="5.1 数据集描述"></a>5.1 数据集描述</h4><p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191018-212049@2x.png?raw=true" alt="12" style="zoom:50%;"></p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191018-212341@2x.png?raw=true" alt="13" style="zoom:50%;"></p>
+<p>数据集取自北京地区，2005、2007、2009、2013年数据质量依次变好。</p>
+<p>实验中，使用2013年的数据，选择了100条querying POIs，每条querying POI有4个clue POIs。</p>
+<h4 id="5-2-Accuracy"><a href="#5-2-Accuracy" class="headerlink" title="5.2 Accuracy"></a>5.2 Accuracy</h4><p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191018-212955@2x.png?raw=true" style="zoom:50%;"></p>
+<p>实验中比较了Baseline 1，Baseline 2， Alg，En四种算法。</p>
+<p>Baseline 1:计算相似度时只考虑距离，不考虑方向，衡量方向的作用。 $SCsim_{bl1} (q, o) = \Sigma _{q_i \in N}S(d_E (q_i , o_i )).$</p>
+<p>Baseline 2:计算相似度考虑距离和方向，但是不使用sigmoid function，衡量sigmoid function的作用。</p>
+<p>$SCsim_{bl2}(q, o) = \min \limits _{q^m \in N,o^m \in D_R(q^m.cid)} SCsim_{bl2} (q, o, q^m , o^m ) $</p>
+<p>$SCsim_{bl2} (q, o, q^m , o^m ) = \Upsilon \min \limits _{I \subseteq N, o_i \in I} \tau_i * d_E(q_i, o_i) $</p>
+<p>Alg：上述的算法。</p>
+<p>En：Ensemble Method。</p>
+<p>sigmoid  function where the parameter β decides the slope of curve：</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191018-214700@2x.png?raw=true" style="zoom:50%;"></p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191018-214751@2x.png?raw=true" style="zoom:50%;"></p>
+<h4 id="5-3-Efﬁciency-and-RSR-tree"><a href="#5-3-Efﬁciency-and-RSR-tree" class="headerlink" title="5.3 Efﬁciency and RSR-tree"></a>5.3 Efﬁciency and RSR-tree</h4><p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191018-214932@2x.png?raw=true" style="zoom:50%;"></p>
+<p>In Fig. 15, When the number of clue POIs in a query (excluding the querying POI) increases from 1 to 10, the processing time with RSR-tree dramatically reduced by up to 10 times.</p>
+<p><img src="https://github.com/yangyueren/Pictures/blob/master/clue_based_query/WX20191018-215049@2x.png?raw=true" style="zoom:50%;"></p>
+<p>In Fig. 16(a) , from &lt; 100, 45 &gt; to &lt; 5, 10 &gt;, the number of grid cells increases by more than 800 times and the size of ﬁle maintaining the roll-outstars increase much slower as shown in Fig. 16 (a).</p>
+<p>In Fig. 16(b) , the RSR-tree with ﬁner grid setting has better ﬁltering capability because the spatio-textual similarity estimation tends to be closer to the actual spatio-textual similarity.</p>
+<p>In Fig. 17(a), the storage required for maintaining roll-out-stars at different settings of ξ is presented.</p>
+<p>Given a query $Q_R (q, N, E)$, if a user believes that the distance between the querying POI $q$ and a clue POI $q_i$ is greater than ξ (the maximum value in distance dimension of roll-out-star), the query cannot be solved using the RSR-tree. In this situation, Algorithm 1 will be used.</p>
+<h3 id="6-论文贡献"><a href="#6-论文贡献" class="headerlink" title="6. 论文贡献"></a>6. 论文贡献</h3><ol>
+<li>提出了可以容忍数据质量的时空文本上下文相似度的衡量方法，一是综合考虑distance和direction，二是使用了激活函数，效果更好；</li>
+<li>提出RSR-tree，提高了查询速度；</li>
+<li>提出Ensemble Method，交叉验证提高准确率，即使truly matching of queyring POI不在D中，也可以找到用户想查询区域。</li>
+<li>此问题的研究具有实际价值，并且可以扩展到三维空间和涉及到空间物体分布的研究领域。</li>
+</ol>
+<h3 id="7-一些证明"><a href="#7-一些证明" class="headerlink" title="7. 一些证明"></a>7. 一些证明</h3><p>待补充。</p>
+<h3 id="8-遗留问题"><a href="#8-遗留问题" class="headerlink" title="8. 遗留问题"></a>8. 遗留问题</h3><h4 id="8-1-max的问题"><a href="#8-1-max的问题" class="headerlink" title="8.1 max的问题"></a>8.1 max的问题</h4><p>$Clue-based\quad Spatio-textual\quad Query$ 这篇文章的 $p535$  $section6 .2$ 中，计算$SCsim ∗ (q, o, gr(q^m ),gc(q^m )) = γ^ ∗ \max \limits_{a_i ∈N_G ,b_i ∈Λ_G} τ_i ∗ S(d_E (a_i , b_i )) $ 的式子中，我觉得这个$max$函数有问题，应该是$sum$函数。</p>
+<p>理由如下：</p>
+<p>在$lemma 2$ 证明过程中，文中比较了$d_{min} (gr(q_i ), gc(q_i )) $和 $ d_E (q_i , o_i )$ [该式子在 $p533$ $SCsim(N, I) := \Sigma _{q_i∈N,o_i∈I} τ_i ∗ S(d_E (q i , o i ))$ 中]，以及“$γ^∗$ is not less than $γ$ ”，并没有指出$sum$函数和$max$函数的引起的不同，所以我认为 $p535$ 页的式子中应该是 $sum$ 函数，这样前后就一致了。</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2019/07/21/2/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/Resume/" rel="noopener noreferrer" target="_self">
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
