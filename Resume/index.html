@@ -18,8 +18,8 @@
 
 				<!-- Header -->
 					<header id="header">
-						<span class="avatar"><img src="images/avatar.jpg" alt="" /></span>
-						<h1>A Memory for Wang Xiao</h1>
+						<span class="avatar"><img src="images/avatar1.jpeg" alt="" /></span>
+						<h1 style="font-family: cursive;font-variant-caps: normal;">A Memory for Wang Xiao</h1>
 						<!-- <ul class="icons">
 							<li><a href="#" class="icon style2 fa-twitter"><span class="label">Twitter</span></a></li>
 							<li><a href="#" class="icon style2 fa-facebook"><span class="label">Facebook</span></a></li>
@@ -80,7 +80,7 @@
 
 				<!-- Footer -->
 					<footer id="footer">
-						<p>&copy;  All rights reserved by WX.</p>
+						<p onclick="btnclick()">&copy;  All rights reserved by WX.</p>
 					</footer>
 
 			</div>
@@ -241,6 +241,11 @@
 				}
 				})
 			})
+
+            function btnclick(){
+                loadPics(4);
+                sleep(500);
+            }
             </script>
             
             <!-- <script src="assets/js/main.js"></script> -->
