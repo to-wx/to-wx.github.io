@@ -1,21 +1,132 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+<!DOCTYPE HTML>
+<!--
+	Visualize by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html>
+	<head>
+		<title>Visualize by TEMPLATED</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body>
 
-<head>
+		<!-- Wrapper -->
+			<div id="wrapper">
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+				<!-- Header -->
+					<header id="header">
+						<span class="avatar"><img src="images/avatar.jpg" alt="" /></span>
+						<h1>This is a gallary for wang xiao</h1>
+						<!-- <ul class="icons">
+							<li><a href="#" class="icon style2 fa-twitter"><span class="label">Twitter</span></a></li>
+							<li><a href="#" class="icon style2 fa-facebook"><span class="label">Facebook</span></a></li>
+							<li><a href="#" class="icon style2 fa-instagram"><span class="label">Instagram</span></a></li>
+							<li><a href="#" class="icon style2 fa-500px"><span class="label">500px</span></a></li>
+							<li><a href="#" class="icon style2 fa-envelope-o"><span class="label">Email</span></a></li>
+						</ul> -->
+					</header>
 
-</head>
+				<!-- Main -->
+					<section id="main">
 
-<body>
-    <h2>To be continued.</h2>
-    <ul>
-        <li>✅今天leetcode了嘛 </li>
-        <li>❎今天锻炼了嘛 </li>
-        <li>✅今天ml dl了嘛 </li>
-        <li>❎今天读书写总结了嘛 </li>
-        </ol>
+						<!-- Thumbnails -->
+							<section class="thumbnails">
+								<div id="div1">
+									<a href="images/fulls/01.jpg">
+										<img src="images/thumbs/01.jpg" alt="" />
+										<h3>Lorem ipsum dolor sit amet</h3>
+									</a>
+									<a href="images/fulls/02.jpg">
+										<img src="images/thumbs/02.jpg" alt="" />
+										<h3>Lorem ipsum dolor sit amet</h3>
+									</a>
+									</a>
+								</div>
+								<div id="div2">
+									<a href="images/fulls/03.jpg">
+										<img src="images/thumbs/03.jpg" alt="" />
+										<h3>Lorem ipsum dolor sit amet</h3>
+									</a>
+									<a href="images/fulls/04.jpg">
+										<img src="images/thumbs/04.jpg" alt="" />
+										<h3>Lorem ipsum dolor sit amet</h3>
+									</a>
+									<a href="images/fulls/05.jpg">
+										<img src="images/thumbs/05.jpg" alt="" />
+										<h3>Lorem ipsum dolor sit amet</h3>
+									</a>
+								</div>
+								<div id="div3">
+									<a href="images/fulls/06.jpg">
+										<img src="images/thumbs/06.jpg" alt="" />
+										<h3>Lorem ipsum dolor sit amet</h3>
+									</a>
+									<a href="images/fulls/07.jpg">
+										<img src="images/thumbs/07.jpg" alt="" />
+										<h3>Lorem ipsum dolor sit amet</h3>
+									</a>
+								</div>
+							</section>
 
-</body>
+					</section>
 
+				<!-- Footer -->
+					<footer id="footer">
+						<p>&copy;  All rights reserved by wx.</p>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="https://2-1300539574.cos.ap-chengdu.myqcloud.com/assets/js/jquery.min.js"></script>
+			<script src="https://2-1300539574.cos.ap-chengdu.myqcloud.com/assets/js/jquery.poptrox.min.js"></script>
+			<script src="https://2-1300539574.cos.ap-chengdu.myqcloud.com/assets/js/skel.min.js"></script>
+			<script src="https://2-1300539574.cos.ap-chengdu.myqcloud.com/assets/js/main.js"></script>
+			
+
+			<!-- my own js -->
+			<script src="https://2-1300539574.cos.ap-chengdu.myqcloud.com/assets/js/raw_data.js"></script>
+		
+			<script type='text/javascript' src='https://2-1300539574.cos.ap-chengdu.myqcloud.com/js/jquery.js'></script>
+			<script type="text/javascript">
+			// alert(data[3]['url']);
+
+			function getElementTop(element){
+		　　　　var actualTop = element.offsetTop;
+		　　　　var current = element.offsetParent;
+		　　　　while (current !== null){
+		　　　　　　actualTop += (current.offsetTop+current.clientTop);
+		　　　　　　current = current.offsetParent;
+		　　　　}
+		　　　　return actualTop;
+		　　}
+
+			var page_num=2;
+			$(document).ready(function(){
+				$(window).scroll(function(){
+				if($(document).scrollTop()>=$(document).height()-$(window).height()){
+					alert("jjj");
+					page_num += 1;
+					alert(page_num);
+					var s = "<a href=\"images/fulls/04.jpg\"><img src=\"images/thumbs/04.jpg\" alt=\"\" /><h3>Lorem ipsum dolor sit amet</h3></a>"
+					var obj = document.getElementById("div1");
+					$("#div1").append(s);
+					$("#div1").append(s);
+					$("#div1").append(s);
+					$("#div1").append(s);
+					$("#div1").append(s);
+					var obj2 = document.getElementById("div2");
+					var b2 = obj2.lastElementChild;
+					var h2 = getElementTop(b2);
+					alert(h2);
+				}
+				})
+			})
+			</script>
+
+
+	</body>
 </html>
