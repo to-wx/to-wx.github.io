@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Happy Birthday</title>
+		<title>Visualize by TEMPLATED</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -19,7 +19,7 @@
 				<!-- Header -->
 					<header id="header">
 						<span class="avatar"><img src="images/avatar.jpg" alt="" /></span>
-						<h1>A Memory for Wang Xiao</h1>
+						<h1>This is a gallary for wang xiao</h1>
 						<!-- <ul class="icons">
 							<li><a href="#" class="icon style2 fa-twitter"><span class="label">Twitter</span></a></li>
 							<li><a href="#" class="icon style2 fa-facebook"><span class="label">Facebook</span></a></li>
@@ -72,15 +72,15 @@
                     </section>
                     
 
-                    <div id="outerdiv" style="position:fixed;top:0;left:0;background:rgba(33,33,33,0.92);filter:alpha(opacity=75);z-index:2;width:100%;height:100%;display:none;">
+                    <div id="outerdiv" style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.7);z-index:2;width:100%;height:100%;display:none;">
                         <div id="innerdiv" style="position:absolute;">
-                            <img id="bigimg" style="width: 100%; border-radius:6px" src="" />
+                            <img id="bigimg" style="border:5px solid #fff;" src="" />
                         </div>
                     </div>
 
 				<!-- Footer -->
 					<footer id="footer">
-						<p>&copy;  All rights reserved by WX.</p>
+						<p>&copy;  All rights reserved by wx.</p>
 					</footer>
 
 			</div>
@@ -97,68 +97,11 @@
 			<!-- my own js -->
             <script src="https://2-1300539574.cos.ap-chengdu.myqcloud.com/utils/wx.js"></script>
             
-            <script src="https://2-1300539574.cos.ap-chengdu.myqcloud.com/assets/js/jquery.foggy.min.js"></script>
+            <!-- <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script> -->
 		
 			<!-- <script type='text/javascript' src='https://2-1300539574.cos.ap-chengdu.myqcloud.com/js/jquery.js'></script> -->
 			<script type="text/javascript">
-            // alert(data[3]['url']);
-            
-
-
-
-            $(function(){
-                $(".pimg").click(function(){
-                    var _this = $(this);//将当前的pimg元素作为_this传入函数
-                    // $("#main").foggy({blurRadius: 4, opacity: 0.8,  cssFilterSupport: true });
-                    imgShow("#outerdiv", "#innerdiv", "#bigimg", _this);
-                    
-                    // $("#main").foggy({blurRadius: 6, opacity: 0.7,  cssFilterSupport: true });
-                });
-
-            });
-            
-            function imgShow(outerdiv, innerdiv, bigimg, _this){
-                var src = _this.attr("src");//获取当前点击的pimg元素中的src属性
-                $(bigimg).attr("src", src);//设置#bigimg元素的src属性
-                /*获取当前点击图片的真实大小，并显示弹出层及大图*/
-                $("<img/>").attr("src", src).load(function(){
-                    var windowW = $(window).width();//获取当前窗口宽度
-                    var windowH = $(window).height();//获取当前窗口高度
-                    var realWidth = this.width;//获取图片真实宽度
-                    var realHeight = this.height;//获取图片真实高度
-                    var imgWidth, imgHeight;
-                    var scale = 0.75;//缩放尺寸，当图片真实宽度和高度大于窗口宽度和高度时进行缩放
-                    if(realHeight>windowH*scale) {//判断图片高度
-                        imgHeight = windowH*scale;//如大于窗口高度，图片高度进行缩放
-                        imgWidth = imgHeight/realHeight*realWidth;//等比例缩放宽度
-                        if(imgWidth>windowW*scale) {//如宽度扔大于窗口宽度
-                            imgWidth = windowW*scale;//再对宽度进行缩放
-                        }
-                    } else if(realWidth>windowW*scale) {//如图片高度合适，判断图片宽度
-                        imgWidth = windowW*scale;//如大于窗口宽度，图片宽度进行缩放
-                        imgHeight = imgWidth/realWidth*realHeight;//等比例缩放高度   
-                    } else {//如果图片真实高度和宽度都符合要求，高宽不变
-                        imgWidth = realWidth;
-                        imgHeight = realHeight;
-                    }
-            
-                    $(bigimg).css("width",imgWidth);//以最终的宽度对图片缩放
-                    var w = (windowW-imgWidth)/2;//计算图片与窗口左边距
-                    var h = (windowH-imgHeight)/2;//计算图片与窗口上边距
-                    $(innerdiv).css({"top":h, "left":w});//设置#innerdiv的top和left属性
-                    $(outerdiv).fadeIn("slow");//淡入显示#outerdiv及.pimg
-                    $("#main").foggy({blurRadius: 4, opacity: 0.8,  cssFilterSupport: true });
-                });
-            
-                $(outerdiv).click(function(){//再次点击淡出消失弹出层
-                    $(this).fadeOut("fast","swing");
-                    $("#main").foggy(false);
-                });
-            
-            }
-            
-
-
+			// alert(data[3]['url']);
 
 			function getElementTop(element){
 		　　　　var actualTop = element.offsetTop;
@@ -173,15 +116,15 @@
 
             function getLowestDiv(){
                 var obj1 = document.getElementById("div1");
-                var b1 = obj1.lastElementChild;
+                var b1 = obj1.children[cnt1];
                 var h1 = getElementTop(b1);
 
                 var obj2 = document.getElementById("div2");
-                var b2 = obj2.lastElementChild;
+                var b2 = obj2.children[cnt2];
                 var h2 = getElementTop(b2);
 
                 var obj3 = document.getElementById("div3");
-                var b3 = obj3.lastElementChild;
+                var b3 = obj3.children[cnt3];
                 var h3 = getElementTop(b3);
 
                 if(h1 <= h2 && h1<=h3) return 1;
@@ -195,7 +138,11 @@
             // var cnt1=0, cnt2=0, cnt3=0;
             // var pos1=0, pos2=0, pos3=0;
             var preurl = "https://2-1300539574.cos.ap-chengdu.myqcloud.com/wx/"
-              
+            // flush();
+
+           
+           
+            
             function loadPics(num){
                 for(var i=0; i<num; i++){
                     if(nowcnt < totalcnt){
@@ -203,24 +150,19 @@
                 "                                        <img src=\""+ preurl+ data[nowcnt]['url'] +"\" alt=\"\" class=\"pimg\"/>\n" +
                 "                                        <h5 style=\"margin-top: 0.9em;\">"+ data[nowcnt]['notes']+ "</h5>\n" +
                 "                                    </a>";
-
-                        var i = getLowestDiv();
-                        if(i==1){
-                            var obj = document.getElementById("div1");
-                            $("#div1").append(s);
-                        }
-                        else if(i==2){
-                            var obj = document.getElementById("div2");
-                            $("#div2").append(s);
-                        }else{
-                            var obj = document.getElementById("div3");
-                            $("#div3").append(s);
-                        }
+                        var obj = document.getElementById("div1");
+                        $("#div1").append(s);
+                    
+                        var obj = document.getElementById("div2");
+                        $("#div2").append(s);
+                
+                        var obj = document.getElementById("div3");
+                        $("#div3").append(s);
                         nowcnt += 1;
                     }
                    
-                }
 
+                }
                 $(".pimg").click(function(){
                     var _this = $(this);//将当前的pimg元素作为_this传入函数
                     imgShow("#outerdiv", "#innerdiv", "#bigimg", _this);
@@ -237,7 +179,7 @@
 				if($(document).scrollTop()>=$(document).height()-$(window).height()){
 					// alert("jjj");
                     loadPics(4);
-                    sleep(500);
+                    // sleep(500);
 				}
 				})
 			})

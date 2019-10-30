@@ -12,23 +12,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Java,Sprint boot,Elasticsearch,">
+    <meta name="keywords" content="wang xiao, happy birthday">
   
 
-  <meta name="description" content="这是大三暑假完成的一个基于Elasticsearch的搜索引擎，后端及ES部分由我用Spring boot完成，前端和爬虫由队友完成。">
-<meta name="keywords" content="Java,Sprint boot,Elasticsearch">
+  <meta name="description" content="基于Elasticsearch集群的数据查询优化Elasticsearch是一个基于Lucene的分布式全文搜索引擎，能够横向扩展数以百计的服务器，存储PB级的数据，而且对每个字段都可以建立索引并且检索，并且可以在极短的时间内存储、搜索和分析大量的数据，程序员最爱的网站Github的搜索就是基于ES构建的，GitHub大约有30TB的索引文件数据，由此可见Elasticsearch（下文简称ES）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Chaggie Search Engine">
-<meta property="og:url" content="https://to-wx.github.io/2019/07/20/1/index.html">
+<meta property="og:url" content="https://to-wx.github.io/2019/11/10/1/index.html">
 <meta property="og:site_name" content="Wang Xiao">
-<meta property="og:description" content="这是大三暑假完成的一个基于Elasticsearch的搜索引擎，后端及ES部分由我用Spring boot完成，前端和爬虫由队友完成。">
+<meta property="og:description" content="基于Elasticsearch集群的数据查询优化Elasticsearch是一个基于Lucene的分布式全文搜索引擎，能够横向扩展数以百计的服务器，存储PB级的数据，而且对每个字段都可以建立索引并且检索，并且可以在极短的时间内存储、搜索和分析大量的数据，程序员最爱的网站Github的搜索就是基于ES构建的，GitHub大约有30TB的索引文件数据，由此可见Elasticsearch（下文简称ES）">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://github.com/yangyueren/ChaggieSearchEngine/raw/master/pictures/1.png">
-<meta property="og:updated_time" content="2019-07-20T16:06:06.000Z">
+<meta property="og:image" content="http://www.biaodianfu.com/wp-content/uploads/2016/09/lucene-tf-idf.png">
+<meta property="og:updated_time" content="2019-10-30T16:37:54.122Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Chaggie Search Engine">
-<meta name="twitter:description" content="这是大三暑假完成的一个基于Elasticsearch的搜索引擎，后端及ES部分由我用Spring boot完成，前端和爬虫由队友完成。">
-<meta name="twitter:image" content="https://github.com/yangyueren/ChaggieSearchEngine/raw/master/pictures/1.png">
+<meta name="twitter:description" content="基于Elasticsearch集群的数据查询优化Elasticsearch是一个基于Lucene的分布式全文搜索引擎，能够横向扩展数以百计的服务器，存储PB级的数据，而且对每个字段都可以建立索引并且检索，并且可以在极短的时间内存储、搜索和分析大量的数据，程序员最爱的网站Github的搜索就是基于ES构建的，GitHub大约有30TB的索引文件数据，由此可见Elasticsearch（下文简称ES）">
+<meta name="twitter:image" content="http://www.biaodianfu.com/wp-content/uploads/2016/09/lucene-tf-idf.png">
 
   
 
@@ -158,7 +157,7 @@ ga('send', 'pageview');
     <div class="article-meta">
       <span>
         <i class="icon-calendar"></i>
-        <span>2019.07.20</span>
+        <span>2019.11.10</span>
       </span>
 
       
@@ -191,8 +190,7 @@ ga('send', 'pageview');
 
   <div class="article-content">
     
-      <p>这是大三暑假完成的一个基于Elasticsearch的搜索引擎，后端及ES部分由我用Spring boot完成，前端和爬虫由队友完成。<br><a id="more"></a></p>
-<h2 id="基于Elasticsearch集群的数据查询优化"><a href="#基于Elasticsearch集群的数据查询优化" class="headerlink" title="基于Elasticsearch集群的数据查询优化"></a>基于Elasticsearch集群的数据查询优化</h2><p>Elasticsearch是一个基于Lucene的分布式全文搜索引擎，能够横向扩展数以百计的服务器，存储PB级的数据，而且对每个字段都可以建立索引并且检索，并且可以在极短的时间内存储、搜索和分析大量的数据，程序员最爱的网站Github的搜索就是基于ES构建的，GitHub大约有30TB的索引文件数据，由此可见Elasticsearch（下文简称ES）强大的搜索功能。</p>
+      <h2 id="基于Elasticsearch集群的数据查询优化"><a href="#基于Elasticsearch集群的数据查询优化" class="headerlink" title="基于Elasticsearch集群的数据查询优化"></a>基于Elasticsearch集群的数据查询优化</h2><p>Elasticsearch是一个基于Lucene的分布式全文搜索引擎，能够横向扩展数以百计的服务器，存储PB级的数据，而且对每个字段都可以建立索引并且检索，并且可以在极短的时间内存储、搜索和分析大量的数据，程序员最爱的网站Github的搜索就是基于ES构建的，GitHub大约有30TB的索引文件数据，由此可见Elasticsearch（下文简称ES）强大的搜索功能。</p>
 <p>在此次的深度搜索引擎项目之中，虽然Elasticsearch也可以在一个节点上使用，该节点可以同时担任master node和data node，但是为了发挥Elasticsearch的分布式搜索的优势，在我们的深度搜索引擎中我们使用了三台服务器提供Elasticsearch的服务。下文将详细介绍从集群部署到优化查询的一些要点。</p>
 <h3 id="一、Elasticsearch的集群部署"><a href="#一、Elasticsearch的集群部署" class="headerlink" title="一、Elasticsearch的集群部署"></a>一、Elasticsearch的集群部署</h3><h4 id="1-ES概念简介"><a href="#1-ES概念简介" class="headerlink" title="1. ES概念简介"></a>1. ES概念简介</h4><p>Elasticsearch中有几个比较重要的概念，集群是指连接在一起的若干台服务器，不同的服务器承担不同的角色，一起提供服务。集群中有主节点、数据节点和客户端节点等。主节点负责管理整个集群，当群集的拓扑结构改变时把索引分片分派到相应的节点上，主节点是从可以担任主节点的节点中选举出来的。数据节点只负责存储数据，客户端节点在选举主节点过程中起作用。ES的分片是把索引信息分散到多个节点上，相当于一桶水用多个杯子装。副本是指索引信息的拷贝。</p>
 <p>在进行ES的配置时，首先要考虑节点数和分片数。通过实验，多节点的ES集群中的节点数至少为3，分片数为一倍的节点数量到两倍的节点数量。</p>
