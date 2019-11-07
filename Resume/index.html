@@ -171,7 +171,7 @@
         　　}
             
 
-            function getLowestDiv(){
+            function getLowestDiv(last){
                 var obj1 = document.getElementById("div1");
                 var b1 = obj1.lastElementChild;
                 var h1 = getElementTop(b1);
@@ -184,9 +184,9 @@
                 var b3 = obj3.lastElementChild;
                 var h3 = getElementTop(b3);
 
-                if(h1 <= h2 && h1<=h3) return 1;
-                if(h2 < h1 && h2<h1) return 2;
-                if(h3 < h1 && h3<h1) return 3;
+                if(h1 <= h2 && h1<=h3 && last!=1) return 1;
+                if(h2 < h1 && h2<h1 && last!=2) return 2;
+                if(h3 < h1 && h3<h1 && last!=3) return 3;
                 else return 1;
             }
 
@@ -198,13 +198,16 @@
               
             function loadPics(num){
                 for(var j=0; j<num; j++){
+                    // sleep(500);
+                    var last = -1;
                     if(nowcnt < totalcnt){
                         var s = "<a>\n" +
                 "                                        <img src=\""+ preurl+ data[nowcnt]['url'] +"\" alt=\"\" class=\"pimg\"/>\n" +
                 "                                        <h5 style=\"margin-top: 0.9em;\">"+ data[nowcnt]['notes']+ "</h5>\n" +
                 "                                    </a>";
 
-                        var i = getLowestDiv();
+                        var i = getLowestDiv(last);
+                        last = i;
                         if(i==1){
                             var obj = document.getElementById("div1");
                             $("#div1").append(s);
@@ -234,17 +237,22 @@
             }
 			$(document).ready(function(){
 				$(window).scroll(function(){
-				if($(document).scrollTop()>=$(document).height()-$(window).height()){
-					// alert("jjj");
-                    loadPics(4);
-                    sleep(500);
-				}
+                    if($(document).scrollTop()>=$(document).height()-$(window).height()){
+                        // alert("jjj");
+                        // for(var j=0; j<2;j++){
+                            loadPics(6);
+                            sleep(500);
+                        // }
+                    }
 				})
 			})
 
             function btnclick(){
-                loadPics(3);
-                sleep(500);
+                // for(var j=0; j<3;j++){
+                    loadPics(3);
+                    sleep(700);
+                // }
+                
             }
             </script>
             
