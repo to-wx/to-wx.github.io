@@ -185,8 +185,8 @@
                 var h3 = getElementTop(b3);
 
                 if(h1 <= h2 && h1<=h3 && last!=1) return 1;
-                if(h2 < h1 && h2<h1 && last!=2) return 2;
-                if(h3 < h1 && h3<h1 && last!=3) return 3;
+                if(h2 <= h1 && h2<=h3 && last!=2) return 2;
+                if(h3 < h1 && h3<h2 && last!=3) return 3;
                 else return 1;
             }
 
