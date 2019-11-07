@@ -185,9 +185,9 @@
                 var h3 = getElementTop(b3);
 
                 if(h1 <= h2 && h1<=h3 && last!=1) return 1;
-                if(h2 <= h1 && h2<=h3 && last!=2) return 2;
+                if(h2 < h1 && h2<h3 && last!=2) return 2;
                 if(h3 < h1 && h3<h2 && last!=3) return 3;
-                else return 1;
+                return 1;
             }
 
             var totalcnt = data.length;
@@ -240,8 +240,15 @@
                     if($(document).scrollTop()>=$(document).height()-$(window).height()){
                         // alert("jjj");
                         // for(var j=0; j<2;j++){
-                            loadPics(6);
+                            loadPics(1);
                             sleep(500);
+                            loadPics(1);
+                            sleep(500);
+                            loadPics(1);
+                            sleep(500);
+                            loadPics(1);
+                            sleep(500);
+                            
                         // }
                     }
 				})
